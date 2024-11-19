@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Converter | แปลงข้อความเป็น Binary</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" integrity="sha512-9xKTRVabjVeZmc+GUW8GgSmcREDunMM+Dt/GrzchfN8tkwHizc5RP4Ok/MXFFy5rIjJjzhndFScTceq5e6GvVQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+        :root {
+            --primary: #2dd4bf;
+            --background: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --border: #e2e8f0;
+            --gradient: linear-gradient(135deg, #2dd4bf 0%, #0ea5e9 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Inter", "Kanit";
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 2rem;
+            min-height: 100vh;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgb(45, 212, 191, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgb(14, 165, 233, 0.1) 0%, transparent 20%);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            opacity: 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: var(--text);
+            margin-bottom: 1rem;
+            font-weight: 600;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 1.1rem;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .converter-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .converter-card {
+            background: var(--card);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .converter-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+        }
+
+        .card-header {
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 0.75rem;
+            resize: vertical;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(45, 212, 191, 0.1);
+            background: white;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: -100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover::after {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: var(--text);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .output {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background-color: #f1f5f9;
+            border-radius: 0.75rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+            position: relative;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        .output.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .output:empty {
+            display: none;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--gradient);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            transform: translateY(150%);
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+        }
+
+        @media (min-width: 768px) {
+            .converter-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .loading span {
+            width: 10px;
+            height: 10px;
+            margin: 0 3px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: bounce 0.5s infinite alternate;
+        }
+
+        .loading span:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .loading span:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        @keyframes bounce {
+            to {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Particle Effects */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .content {
+            padding: 2rem;
+            margin-left: 0;
+            transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .content.shifted {
+            margin-left: 280px;
+        }
+
+        .menu-btn {
+            position: fixed;
+            left: 20px;
+            top: 20px;
+            background: white;
+            color: #333;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .sidebar {
+            position: fixed;
+            left: -280px;
+            top: 0;
+            width: 280px;
+            height: 100%;
+            background: white;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            background: #f5f5f5;
+            transform: rotate(90deg);
+        }
+
+        .sidebar-content {
+            padding: 1rem 0;
+        }
+
+        .menu-item {
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            color: #666;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: #f8f9fa;
+            color: #333;
+            padding-left: 2.5rem;
+        }
+
+        .menu-item.active {
+            color: #2196f3;
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+        }
+
+        .menu-item i {
+            margin-right: 1rem;
+            font-size: 1.25rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .menu-item span {
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(2px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s;
+            z-index: 999;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @media (max-width: 768px) {
+            .content.shifted {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <button class="menu-btn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="overlay"></div>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Menu</h2>
+            <button class="close-btn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <div class="menu-item active">
+                <i class="fas fa-home"></i>
+                <span>หน้าหลัก</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-user"></i>
+                <span>โปรไฟล์</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-chart-bar"></i>
+                <span>แดชบอร์ด</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>ตั้งค่า</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-bell"></i>
+                <span>การแจ้งเตือน</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-question-circle"></i>
+                <span>ช่วยเหลือ</span>
+            </div>
+        </div>
+    </div>
+    <div class="particles"></div>
+    <div class="container">
+        <header class="header">
+            <h1>Binary Converter</h1>
+            <p>แปลงข้อความเป็น Binary Raw และ Binary เป็นข้อความ</p>
+        </header>
+
+        <div class="converter-grid">
+            <div class="converter-card">
+                <div class="card-header">
+                    <div class="card-icon">T</div>
+                    <h2>ข้อความเป็น Binary</h2>
+                </div>
+                <textarea id="inputText" placeholder="พิมพ์หรือวางข้อความที่นี่..."></textarea>
+                <div class="loading">
+                    <span></span><span></span><span></span>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="convertToBinary()">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        แปลงเป็น Binary
+                    </button>
+                </div>
+                <div id="binaryOutput" class="output"></div>
+                <div class="button-group">
+                    <button class="btn btn-secondary" id="copyBinaryButton" style="display: none;"
+                        onclick="copyToClipboard('binaryOutput')">
+                        คัดลอก Binary
+                    </button>
+                </div>
+            </div>
+
+            <div class="converter-card">
+                <div class="card-header">
+                    <div class="card-icon">B</div>
+                    <h2>Binary เป็นข้อความ</h2>
+                </div>
+                <textarea id="inputBinary" placeholder="พิมพ์หรือวาง Binary ที่นี่..."></textarea>
+                <div class="loading">
+                    <span></span><span></span><span></span>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="convertToText()">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                        </svg>
+                        แปลงเป็นข้อความ
+                    </button>
+                </div>
+                <div id="textOutput" class="output"></div>
+                <div class="button-group">
+                    <button class="btn btn-secondary" id="copyTextButton" style="display: none;"
+                        onclick="copyToClipboard('textOutput')">
+                        คัดลอกข้อความ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">คัดลอกแล้ว!</div>
+
+    <script>
+
+        const menuBtn = document.querySelector('.menu-btn');
+        const closeBtn = document.querySelector('.close-btn');
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.overlay');
+        const content = document.querySelector('.content');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            content.classList.toggle('shifted');
+        }
+
+        menuBtn.addEventListener('click', toggleSidebar);
+        closeBtn.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+
+        // เพิ่มการเปลี่ยน active state ของเมนู
+        const menuItems = document.querySelectorAll('.menu-item');
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                menuItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        gsap.to('.container', {
+            opacity: 1,
+            duration: 1,
+            ease: 'power2.out'
+        });
+
+        gsap.to('.header h1', {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            delay: 0.3,
+            ease: 'back.out'
+        });
+
+        gsap.to('.header p', {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            delay: 0.5,
+            ease: 'back.out'
+        });
+
+        gsap.to('.converter-card', {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            delay: 0.7,
+            stagger: 0.2,
+            ease: 'back.out'
+        });
+
+        // Particle Effect
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.style.position = 'absolute';
+            particle.style.width = '2px';
+            particle.style.height = '2px';
+            particle.style.background = 'rgba(45, 212, 191, 0.2)';
+            particle.style.borderRadius = '50%';
+
+            const startX = Math.random() * window.innerWidth;
+            const startY = Math.random() * window.innerHeight;
+
+            particle.style.left = startX + 'px';
+            particle.style.top = startY + 'px';
+
+            document.querySelector('.particles').appendChild(particle);
+
+            gsap.to(particle, {
+                y: startY - 100 - Math.random() * 100,
+                x: startX + (Math.random() - 0.5) * 100,
+                opacity: 0,
+                duration: 2 + Math.random() * 2,
+                ease: 'power1.out',
+                onComplete: () => {
+                    particle.remove();
+                }
+            });
+        }
+
+        setInterval(createParticle, 200);
+
+        async function convertToBinary() {
+            showLoading(true, 'inputText');
+            let inputText = document.getElementById("inputText").value;
+            try {
+                const response = await fetch('/convert_to_binary', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'text=' + encodeURIComponent(inputText)
+                });
+                const data = await response.json();
+                showOutput('binaryOutput', data.binary);
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง', 'error');
+            } finally {
+                showLoading(false, 'inputText');
+            }
+        }
+
+        async function convertToText() {
+            showLoading(true, 'inputBinary');
+            let inputBinary = document.getElementById("inputBinary").value;
+            try {
+                const response = await fetch('/convert_to_text', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'binary=' + encodeURIComponent(inputBinary)
+                });
+                const data = await response.json();
+                showOutput('textOutput', data.text);
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง', 'error');
+            } finally {
+                showLoading(false, 'inputBinary');
+            }
+        }
+
+        function showLoading(show, inputId) {
+            const loadingElement = document.getElementById(inputId).nextElementSibling;
+            loadingElement.style.display = show ? 'flex' : 'none';
+
+            // Disable/Enable buttons during loading
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.disabled = show;
+                if (show) {
+                    button.style.opacity = '0.7';
+                    button.style.cursor = 'not-allowed';
+                } else {
+                    button.style.opacity = '1';
+                    button.style.cursor = 'pointer';
+                }
+            });
+        }
+
+        function showOutput(elementId, content) {
+            const outputElement = document.getElementById(elementId);
+            outputElement.textContent = content;
+
+            // Animate output appearance
+            gsap.fromTo(outputElement,
+                { opacity: 0, scale: 0.95 },
+                {
+                    opacity: 1,
+                    scale: 1,
+                    duration: 0.5,
+                    ease: 'back.out'
+                }
+            );
+
+            createSuccessParticles(outputElement);
+        }
+
+        function createSuccessParticles(element) {
+            const rect = element.getBoundingClientRect();
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = '4px';
+                particle.style.height = '4px';
+                particle.style.background = '#2dd4bf';
+                particle.style.borderRadius = '50%';
+                particle.style.zIndex = '1000';
+
+                const startX = rect.left + Math.random() * rect.width;
+                const startY = rect.top + Math.random() * rect.height;
+
+                particle.style.left = startX + 'px';
+                particle.style.top = startY + 'px';
+
+                document.body.appendChild(particle);
+
+                gsap.to(particle, {
+                    x: (Math.random() - 0.5) * 100,
+                    y: -100 - Math.random() * 100,
+                    opacity: 0,
+                    duration: 1 + Math.random(),
+                    ease: 'power2.out',
+                    onComplete: () => particle.remove()
+                });
+            }
+        }
+
+        async function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast('คัดลอกแล้ว!', 'success');
+
+                const button = document.querySelector(`button[onclick="copyToClipboard('${elementId}')"]`);
+                gsap.to(button, {
+                    scale: 1.1,
+                    duration: 0.2,
+                    yoyo: true,
+                    repeat: 1
+                });
+            } catch (err) {
+                console.error('ไม่สามารถคัดลอกได้:', err);
+                showToast('ไม่สามารถคัดลอกได้', 'error');
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.background = type === 'success'
+                ? 'linear-gradient(135deg, #2dd4bf 0%, #0ea5e9 100%)'
+                : 'linear-gradient(135deg, #ef4444 0%, #f43f5e 100%)';
+
+            gsap.to(toast, {
+                y: '0%',
+                duration: 0.5,
+                ease: 'back.out'
+            });
+
+            setTimeout(() => {
+                gsap.to(toast, {
+                    y: '150%',
+                    duration: 0.5,
+                    ease: 'power2.in'
+                });
+            }, 3000);
+        }
+
+        let keys = [];
+        const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+
+        document.addEventListener('keydown', (e) => {
+            keys.push(e.key);
+            keys = keys.slice(-10);
+
+            if (keys.join('') === konamiCode.join('')) {
+                celebrateKonamiCode();
+            }
+        });
+
+        function celebrateKonamiCode() {
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => createParticle(), i * 20);
+            }
+
+            gsap.to('.converter-card', {
+                rotate: 360,
+                duration: 1,
+                ease: 'power2.inOut'
+            });
+
+            document.documentElement.style.setProperty('--primary', '#f43f5e');
+            setTimeout(() => {
+                document.documentElement.style.setProperty('--primary', '#2dd4bf');
+            }, 1000);
+        }
+
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('input', function () {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+            });
+        });
+
+        window.addEventListener('load', () => {
+            setInterval(createParticle, 200);
+
+            gsap.to('.container', {
+                opacity: 1,
+                duration: 1,
+                ease: 'power2.out'
+            });
+        });
+
+        function showOutput(elementId, content) {
+            const outputElement = document.getElementById(elementId);
+            outputElement.textContent = content;
+
+            gsap.fromTo(outputElement, { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out' });
+
+            if (elementId === 'binaryOutput') {
+                document.getElementById('copyBinaryButton').style.display = content ? 'inline-block' : 'none';
+            } else if (elementId === 'textOutput') {
+                document.getElementById('copyTextButton').style.display = content ? 'inline-block' : 'none';
+            }
+        }
+
+    </script>
+</body>
+
+</html>
